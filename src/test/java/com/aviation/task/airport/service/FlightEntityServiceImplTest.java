@@ -100,7 +100,6 @@ class FlightEntityServiceImplTest {
         assertEquals(flightsDeparting, airportInfo.getFlightsDeparting().intValue());
         assertEquals(baggageArrivingPieces, airportInfo.getBaggageArrivingPieces());
         assertEquals(baggageDepartingPieces, airportInfo.getBaggageDepartingPieces());
-
     }
 
     @Test
@@ -120,7 +119,6 @@ class FlightEntityServiceImplTest {
         assertEquals(flightsDeparting, airportInfo.getFlightsDeparting().intValue());
         assertEquals(baggageArrivingPieces, airportInfo.getBaggageArrivingPieces());
         assertEquals(baggageDepartingPieces, airportInfo.getBaggageDepartingPieces());
-
     }
 
     @Test
@@ -140,6 +138,5 @@ class FlightEntityServiceImplTest {
         assertEquals(flightsDeparting, airportInfo.getFlightsDeparting().intValue());
         assertEquals(baggageArrivingPieces, airportInfo.getBaggageArrivingPieces());
         assertEquals(baggageDepartingPieces, airportInfo.getBaggageDepartingPieces());
-
     }
 }

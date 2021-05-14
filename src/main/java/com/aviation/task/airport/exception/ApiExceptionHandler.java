@@ -1,5 +1,7 @@
 package com.aviation.task.airport.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,11 @@ public class ApiExceptionHandler{
 
     public final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
+    private Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
     @ExceptionHandler(value = {MethodArgumentTypeMismatchException.class, DateTimeParseException.class,IllegalArgumentException.class,ConversionFailedException.class})
     public ResponseEntity<Object> handleArgumentTypeMismatchException(Exception e) {
+        log.info("exception handling");
         String msg = "Incorrect argument/s";
         ApiException apiException = new ApiException(msg, badRequest, ZonedDateTime.now(ZoneId.of("Z")));
         return new ResponseEntity<>(apiException, badRequest);

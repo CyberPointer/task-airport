@@ -37,7 +37,6 @@ class ZonedDateTimeConverterTest {
         List<FlightEntity> flightEntity= gson.fromJson(jsonString, flightEntityType);
 
         assertEquals(zonedDateTime, flightEntity.get(0).getDepartureDate());
-
     }
 
     @Test

@@ -8,6 +8,8 @@ import com.aviation.task.airport.service.FlightEntityService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -24,15 +26,18 @@ public class DataInit {
     private final String FILE_FLIGHT_JSON;
     private final String FILE_CARGO_JSON;
 
+    private Logger log = LoggerFactory.getLogger(DataInit.class);
 
     public DataInit(FlightEntityService flightEntityService, CargoEntityService cargoEntityService, String FILE_FLIGHT_JSON,  String FILE_CARGO_JSON) {
         this.flightEntityService = flightEntityService;
         this.cargoEntityService = cargoEntityService;
         this.FILE_FLIGHT_JSON = FILE_FLIGHT_JSON;
         this.FILE_CARGO_JSON = FILE_CARGO_JSON;
+        log.info("Constructing DataInit");
     }
 
     public void loadData() {
+        log.info("Loading Data");
 
         try (FileInputStream fileFlight = new FileInputStream(FILE_FLIGHT_JSON);
              FileInputStream fileCargo = new FileInputStream(FILE_CARGO_JSON);

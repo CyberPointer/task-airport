@@ -2,6 +2,8 @@ package com.aviation.task.airport.service;
 
 import com.aviation.task.airport.model.CargoEntity;
 import com.aviation.task.airport.model.FlightInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -13,17 +15,22 @@ public class CargoEntityServiceImpl implements CargoEntityService {
     private List<CargoEntity> cargoEntities;
     private FlightInfo flightInfo;
 
+    private Logger log = LoggerFactory.getLogger(CargoEntityServiceImpl.class);
+
     @Override
     public void save(List<CargoEntity> cargo) {
+        log.info("saving cargo entities");
         this.cargoEntities = new LinkedList<>(cargo);
     }
 
     @Override
     public List<CargoEntity> findAllCargo() {
+        log.info("finding cargo entities");
         return cargoEntities;
     }
 
     public long calculateCargoWeight(Integer flightId) {
+        log.info("calculating cargo weight");
 
         long cargoWeight = cargoEntities
                 .stream()
@@ -42,6 +49,7 @@ public class CargoEntityServiceImpl implements CargoEntityService {
     }
 
     public long calculateBaggageWeight(Integer flightId) {
+        log.info("calculating baggage weight");
 
         long baggageWeight = cargoEntities
                 .stream()
@@ -60,6 +68,8 @@ public class CargoEntityServiceImpl implements CargoEntityService {
     }
 
     public FlightInfo calculateTotalWeight(Integer flightId) {
+        log.info("calculating total weight");
+
         flightInfo = new FlightInfo();
         flightInfo.setBaggageWeight(calculateBaggageWeight(flightId));
         flightInfo.setCargoWeight(calculateCargoWeight(flightId));

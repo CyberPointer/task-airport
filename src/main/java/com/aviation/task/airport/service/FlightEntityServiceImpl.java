@@ -4,6 +4,8 @@ import com.aviation.task.airport.model.AirportInfo;
 import com.aviation.task.airport.model.Baggage;
 import com.aviation.task.airport.model.CargoEntity;
 import com.aviation.task.airport.model.FlightEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -18,21 +20,27 @@ public class FlightEntityServiceImpl implements FlightEntityService {
     private static List<CargoEntity> cargoEntityList;
     CargoEntityService cargoEntityService;
 
+    private Logger log = LoggerFactory.getLogger(FlightEntityServiceImpl.class);
+
     public FlightEntityServiceImpl(CargoEntityService cargoEntityService) {
         this.cargoEntityService = cargoEntityService;
+        log.info("constructing FlightEntityServiceImpl");
     }
 
     @Override
     public void save(List<FlightEntity> flight) {
+        log.info("saving flightEntities");
         flightEntityList = new LinkedList<>(flight);
     }
 
     @Override
     public List<FlightEntity> findAllFlights() {
+        log.info("finding flightEntities");
         return flightEntityList;
     }
 
     private ZonedDateTime parseDate(String date) {
+        log.info("parsing date from string to ZonedDateTime");
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss XXX");
         return ZonedDateTime.parse(date, format);
     }
@@ -46,7 +54,7 @@ public class FlightEntityServiceImpl implements FlightEntityService {
     }
 
     public AirportInfo flightsInfo(String iATACode, ZonedDateTime date) {
-
+        log.info("calculating flights information");
         cargoEntityList = cargoEntityService.findAllCargo();
         AirportInfo airportInfo = new AirportInfo();
 
@@ -96,7 +104,7 @@ public class FlightEntityServiceImpl implements FlightEntityService {
 //     Baggage Weight for requested Flight
 //     Total Weight for requested Flight
     public int findIdByFlightNumberAndDate(int flightNumber, ZonedDateTime date) {
-
+        log.info("finding flightId");
         int flightId;
         return flightId = flightEntityList.stream()
                 .filter(flight ->
