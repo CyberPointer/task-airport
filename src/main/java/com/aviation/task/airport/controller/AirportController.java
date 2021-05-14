@@ -49,7 +49,6 @@ public class AirportController {
     public AirportInfo getAirportInfo(@PathVariable @Pattern(regexp = AIRPORT_IATA_PATTERN) String iATAcode,
                                       @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss XXX") ZonedDateTime date){
         log.info("processing getAirportInfo ");
-
         AirportInfo airportInfo = flightEntityService.flightsInfo(iATAcode, date);
         return airportInfo;
     }
