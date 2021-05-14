@@ -1,0 +1,23 @@
+[
+  {
+    "flightId": 0,
+    "flightNumber": 4380,
+    "departureAirportIATACode": "ANC",
+    "arrivalAirportIATACode": "GDN",
+    "departureDate": "2017-01-22T02:27:51 -01:00"
+  },
+  {
+    "flightId": 1,
+    "flightNumber": 8074,
+    "departureAirportIATACode": "LAX",
+    "arrivalAirportIATACode": "LEW",
+    "departureDate": "2018-08-30T08:05:36 -02:00"
+  },
+  {
+    "flightId": 2,
+    "flightNumber": 1698,
+    "departureAirportIATACode": "YYT",
+    "arrivalAirportIATACode": "LAX",
+    "departureDate": "2018-08-30T08:05:36 -02:00"
+  }
+]
