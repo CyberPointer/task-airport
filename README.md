@@ -34,8 +34,8 @@ Project is created with:
 
 ## ProjectAssumptions
 * Because information in task.pdf file wasn't precise enough about what type of date should application respond to request, following assumption was made that each request has to be in Zoned Date Time. Wich is capable of matching ISO-8601 date format with offset eg. 2011-12-03T10:15:30 +01:00   
-* Thus searching based on ISO date format with offset is too unique, that means there was almost no possibility to have same matching dates on IATA Airports codes with such small data sample.
-* That's why special cases of a few dates flights with same IATA code for arriving/departing and Dates were made in sample JSON file's in order to show correctness of calculating results.
+* Thus searching based on ISO date format with offset is too unique for such small data sample, that means there was almost no possibility to have same matching dates on IATA Airports codes.
+* That's why special cases of a few date flights with same IATA code for arriving/departing and Dates were made in sample JSON file's in order to show correctness of calculating results.
 * Weight is returned in kg.
 
 	
@@ -181,9 +181,9 @@ The Service package is heart of business logic that produces expected by client 
 
 ## Tests
 
-Each class has their own corresponding test class that makes unit and integration(Some tests need application context to inject correct dependencies) tests. Except classes that come from "model" package. 
+Each class has their own corresponding test class that makes unit and integration tests (some tests need application context to inject correct dependencies). Except classes that come from "model" package. 
 
-Tests that were made, are based on different from main applciation JSON data files, they are located in following directory:
+Tests that were made, are based on different from main applciation JSON data files. These files are located in following directory:
 ```
 main/src/test/resources/json/testcargo.json
 main/src/test/resources/json/testflight.json

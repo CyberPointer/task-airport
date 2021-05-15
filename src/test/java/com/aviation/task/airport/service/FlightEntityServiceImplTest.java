@@ -34,6 +34,9 @@ class FlightEntityServiceImplTest {
         dataLoader.loadData();
     }
 
+
+
+
     @Test
     void testSaveAndFindAllFlights() {
         assertEquals(3, flightEntityService.findAllFlights().size());

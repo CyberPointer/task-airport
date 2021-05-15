@@ -17,13 +17,13 @@ import java.time.format.DateTimeParseException;
 
 @ControllerAdvice
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ApiExceptionHandler{
+public class ApiExceptionHandler {
 
     public final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
     private Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
-    @ExceptionHandler(value = {MethodArgumentTypeMismatchException.class, DateTimeParseException.class,IllegalArgumentException.class,ConversionFailedException.class})
+    @ExceptionHandler(value = {ApiRequestException.class, MethodArgumentTypeMismatchException.class, DateTimeParseException.class, IllegalArgumentException.class, ConversionFailedException.class})
     public ResponseEntity<Object> handleArgumentTypeMismatchException(Exception e) {
         log.info("exception handling");
         String msg = "Incorrect argument/s";
