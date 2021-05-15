@@ -28,19 +28,21 @@ Second for requested IATA code and date responds
 ## Technologies
 Project is created with:
 * Java 11
-* Spring Boot 2.3
+* Spring Boot 2.3.10
 * IntelliJ IDE
 * JUnit, Mockito, Gson
 
 ## ProjectAssumptions
-* Because in task pdf file wasn't precise speficied on what type of date should application respond to request, following assumption was made that each request has to be in Zoned Date Time
-* That's why Date is unique and special cases of date flights were made in JSON file's in order to validate correctness of business logic.
+* Because information in task.pdf file wasn't precise enough about what type of date should application respond to request, following assumption was made that each request has to be in Zoned Date Time. Wich is capable of matching ISO-8601 date format with offset eg. 2011-12-03T10:15:30 +01:00   
+* Thus searching based on ISO date format with offset is too unique, that means there was almost no possibility to have same matching dates on IATA Airports codes with such small data sample.
+* That's why special cases of a few dates flights with same IATA code for arriving/departing and Dates were made in sample JSON file's in order to show correctness of calculating results.
+* Weight is returned in kg.
 
 	
 ## Setup
 Designed endpoints for api.
 
-In order to get information about airport:
+In order to get information about flights arriving/departing and piecies of baggage arriving/departing from airport :
 ```
 /api/airport/xxx/date/yyyy-MM-dd'T'HH:mm:ss XXX
 ```
@@ -59,7 +61,7 @@ Accepted IATA codes:
 * PPX
 #
 
-In order to get information about concrete flight:
+In order to get information about concrete flight's cargo, baggage and total weight:
 ```
 /api/flight/zzz/date/yyyy-MM-dd'T'HH:mm:ss XXX
 ```
@@ -87,7 +89,7 @@ For requested Flight Number and date in url:
 ```
 http://localhost:8080/api/flight/6902/date/2017-12-16T12:37:42%20-01:00
 ```
-Api responds with flight information in JSON:
+Api responds with information about concrete flight's weight in kg, in JSON format:
 ```
  {
     "cargoWeight": "1917",
@@ -96,8 +98,7 @@ Api responds with flight information in JSON:
   }
 ```
 ## SpecialCase
-Because one of project assumption and unqiuness of Date. Modified JSONs were created with same Date but different airport's IATAcodes for arrival/departing. In order to check validation of business logic. 
-
+Because one of project assumption and uniqueness of Date. In order to check possibility of flights arriving/departing at same aiport that is specified in requested IATAcode. Modified JSONs were created with same Date but different airport's IATAcodes for arrival/departing.
 ```
 {
     "flightId": 0,
@@ -114,7 +115,7 @@ Because one of project assumption and unqiuness of Date. Modified JSONs were cre
     "departureDate": "2021-02-06T04:15:29 -01:00"
   }
 ```
-Based on preceding JSONs, api produces depicted respond for following url:
+Based on preceding JSONs, api produces depicted below respond for following url:
 ```
 /api/airport/GDN/date/2021-02-06T04:15:29 -01:00
  
@@ -174,15 +175,15 @@ src/main/java/com/aviation/task/airport/service/
 ```
 
 The Service package is heart of business logic that produces expected by client results.
-* It's divided by Interfaces and theirs implemenetation, each service is using java's  streampipelines & lambdas in order to deliver correct outcomes.
+* It's divided by Interfaces and classes that implement them, each service is using java's  streampipelines & lambdas in order to deliver correct outcomes.
 * FlightEntityServiceImpl calculates number of flights arriving/departing and pieces of baggage arriving/departing at concrete airport. Additionaly it finds flightId based on flightNumber and Date. 
 * CargoEntityServiceImpl produces information about concrete flight's cargo weight, baggage weight and total weight, it uses FlightEntityServiceImpl's help in order to find correct flight ID.
 
 ## Tests
 
-Each class has their own corresponding test class that makes unit and integration tests. Except classes that come from "model" package. 
+Each class has their own corresponding test class that makes unit and integration(Some tests need application context to inject correct dependencies) tests. Except classes that come from "model" package. 
 
-Tests are being made based on diffrent from main applciation JSON data files, they are located in following directory:
+Tests that were made, are based on different from main applciation JSON data files, they are located in following directory:
 ```
 main/src/test/resources/json/testcargo.json
 main/src/test/resources/json/testflight.json

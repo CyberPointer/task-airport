@@ -35,7 +35,7 @@ public class CargoEntityServiceImpl implements CargoEntityService {
         long cargoWeight = cargoEntities
                 .stream()
                 .filter(cargoEntity -> cargoEntity.getFlightId() == flightId)                                           //filtering cargos by flightId
-                .map(CargoEntity::getCargo)                                                             //changing operating object from cargoEntity to list of cargos
+                .map(CargoEntity::getCargo)                                                                             //changing operating object from cargoEntity to list of cargos
                 .flatMapToLong(cargos ->
                         cargos.stream()
                                 .mapToLong(cargo -> {

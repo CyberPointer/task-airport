@@ -20,7 +20,7 @@ public class FlightEntityServiceImpl implements FlightEntityService {
     private static List<CargoEntity> cargoEntityList;
     CargoEntityService cargoEntityService;
 
-    private Logger log = LoggerFactory.getLogger(FlightEntityServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(FlightEntityServiceImpl.class);
 
     public FlightEntityServiceImpl(CargoEntityService cargoEntityService) {
         this.cargoEntityService = cargoEntityService;
@@ -45,31 +45,26 @@ public class FlightEntityServiceImpl implements FlightEntityService {
         return ZonedDateTime.parse(date, format);
     }
 
-//    Number of flights departing from this airport
-//    Number of flights arriving to this airport
-//    Total number (pieces) of baggage arriving to this airport
-//    Total number (pieces) of baggage departing from this airport.
-    public AirportInfo flightsInfo(String iATACode, String date) {
-        return flightsInfo(iATACode, parseDate(date));
-    }
-
-    public AirportInfo flightsInfo(String iATACode, ZonedDateTime date) {
-        log.info("calculating flights information");
-        cargoEntityList = cargoEntityService.findAllCargo();
-        AirportInfo airportInfo = new AirportInfo();
-
-        airportInfo.setFlightsDeparting(flightEntityList.stream()
+    private long countFlightsDeparting(String iATACode, ZonedDateTime date) {
+        log.info("counting number of flights departing");
+        return flightEntityList.stream()
                 .filter(flight ->
                         (flight.getDepartureAirportIATACode().equals(iATACode)) && (flight.getDepartureDate().equals(date)))
-                .count());
+                .count();
+    }
 
-        airportInfo.setFlightsArriving(flightEntityList
+    private long countFlightsArriving(String iATACode, ZonedDateTime date) {
+        log.info("counting number of flights arriving");
+        return flightEntityList
                 .stream()
                 .filter(flight ->
                         (flight.getArrivalAirportIATACode().equals(iATACode)) && flight.getDepartureDate().equals(date))
-                .count());
+                .count();
+    }
 
-        airportInfo.setBaggageDepartingPieces(flightEntityList
+    private int summarizePiecesOfBaggageDeparting(String iATACode, ZonedDateTime date) {
+        log.info("summarizing pieces of baggage departing");
+        return flightEntityList
                 .stream()
                 .filter(flight ->
                         (flight.getDepartureAirportIATACode().equals(iATACode)) && (flight.getDepartureDate().equals(date)))
@@ -79,19 +74,43 @@ public class FlightEntityServiceImpl implements FlightEntityService {
                         .filter(cargoEntity -> cargoEntity.getFlightId() == id)
                         .flatMap(cargoEntity -> cargoEntity.getBaggage().stream())
                         .mapToInt(Baggage::getPieces))
-                .sum());
+                .sum();
 
-        airportInfo.setBaggageArrivingPieces(flightEntityList
+    }
+
+    private int summarizePiecesOfBaggageArriving(String iATACode, ZonedDateTime date) {
+        log.info("summarizing pieces of baggage arriving");
+        return flightEntityList
                 .stream()
                 .filter(flight ->
                         (flight.getArrivalAirportIATACode().equals(iATACode)) && (flight.getDepartureDate().equals(date)))
-                .map(flightEntity -> flightEntity.getFlightId())
+                .map(FlightEntity::getFlightId)
                 .flatMapToInt(id -> cargoEntityList
                         .stream()
                         .filter(cargoEntity -> cargoEntity.getFlightId() == id)
                         .flatMap(cargoEntity -> cargoEntity.getBaggage().stream())
                         .mapToInt(Baggage::getPieces))
-                .sum());
+                .sum();
+    }
+
+
+    public AirportInfo flightsInfo(String iATACode, String date) {
+        return flightsInfo(iATACode, parseDate(date));
+    }
+
+//    Number of flights departing from this airport
+//    Number of flights arriving to this airport
+//    Total number (pieces) of baggage arriving to this airport
+//    Total number (pieces) of baggage departing from this airport.
+    public AirportInfo flightsInfo(String iATACode, ZonedDateTime date) {
+        log.info("calculating flights information");
+        cargoEntityList = cargoEntityService.findAllCargo();
+        AirportInfo airportInfo = new AirportInfo();
+
+        airportInfo.setFlightsDeparting(countFlightsDeparting(iATACode, date));
+        airportInfo.setFlightsArriving(countFlightsArriving(iATACode, date));
+        airportInfo.setBaggageDepartingPieces(summarizePiecesOfBaggageDeparting(iATACode, date));
+        airportInfo.setBaggageArrivingPieces(summarizePiecesOfBaggageArriving(iATACode, date));
 
         return airportInfo;
     }
@@ -100,9 +119,7 @@ public class FlightEntityServiceImpl implements FlightEntityService {
         return findIdByFlightNumberAndDate(flightNumber, parseDate(date));
     }
 
-//     Cargo Weight for requested Flight
-//     Baggage Weight for requested Flight
-//     Total Weight for requested Flight
+
     public int findIdByFlightNumberAndDate(int flightNumber, ZonedDateTime date) {
         log.info("finding flightId");
         int flightId;

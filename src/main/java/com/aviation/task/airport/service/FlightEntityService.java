@@ -11,7 +11,7 @@ public interface FlightEntityService {
     public List<FlightEntity> findAllFlights();
     public int findIdByFlightNumberAndDate(int flightNumber, String date);
     public int findIdByFlightNumberAndDate(int flightNumber, ZonedDateTime date);
-    public AirportInfo flightsInfo(String iATACode, String date);
     public AirportInfo flightsInfo(String iATACode, ZonedDateTime date);
+    public AirportInfo flightsInfo(String iATACode, String date);
 
 }

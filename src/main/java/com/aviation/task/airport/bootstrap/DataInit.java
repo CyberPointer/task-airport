@@ -28,7 +28,7 @@ public class DataInit {
 
     private Logger log = LoggerFactory.getLogger(DataInit.class);
 
-    public DataInit(FlightEntityService flightEntityService, CargoEntityService cargoEntityService, String FILE_FLIGHT_JSON,  String FILE_CARGO_JSON) {
+    public DataInit(FlightEntityService flightEntityService, CargoEntityService cargoEntityService, String FILE_FLIGHT_JSON, String FILE_CARGO_JSON) {
         this.flightEntityService = flightEntityService;
         this.cargoEntityService = cargoEntityService;
         this.FILE_FLIGHT_JSON = FILE_FLIGHT_JSON;
@@ -44,10 +44,8 @@ public class DataInit {
              InputStreamReader flightReader = new InputStreamReader(fileFlight);
              InputStreamReader cargoReader = new InputStreamReader(fileCargo)) {
 
-            Type flightEntityType = new TypeToken<ArrayList<FlightEntity>>() {
-            }.getType();
-            Type cargoEntityType = new TypeToken<ArrayList<CargoEntity>>() {
-            }.getType();
+            Type flightEntityType = new TypeToken<ArrayList<FlightEntity>>() {}.getType();
+            Type cargoEntityType = new TypeToken<ArrayList<CargoEntity>>() {}.getType();
 
             gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeConverter()).create();
 
