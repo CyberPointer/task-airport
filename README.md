@@ -185,7 +185,7 @@ src/main/java/com/aviation/task/airport/exception/ApiExceptioHandler
 src/main/java/com/aviation/task/airport/exception/ApiRequestException
 src/main/java/com/aviation/task/airport/exception/NotFoundException
 ```
-Exception package includes as name suggest global exceptionHandler, that for eg. catches validation exceptions.
+Exception package includes global exceptionHandler, that is responsible for catching exception from whole application.
 
 #
 ```
