@@ -129,7 +129,7 @@ Because one of project assumption and uniqueness of Date. In order to check poss
     "departureDate": "2021-02-06T04:15:29 -01:00"
   }
 ```
-Based on preceding JSONs, api produces depicted below respond for following url:
+Based on preceding JSONs, api for following url produces respond as depicted below:
 ```
 /api/airport/GDN/date/2021-02-06T04:15:29 -01:00
  

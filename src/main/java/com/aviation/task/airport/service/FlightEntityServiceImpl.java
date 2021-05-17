@@ -65,11 +65,11 @@ public class FlightEntityServiceImpl implements FlightEntityService {
                 .count();
     }
 
-    /* In order to calculate pieces of baggage departing/arriving. Operations are quite complex,
-    first all flights id from FlightEntityList have to be found by matching given IATA code and date.
+    /* Method  below is quite complex. In order to calculate pieces of baggage departing/arriving,
+    first all flights ids from FlightEntityList have to be found by matching given IATA code and date.
     After that new stream pipeline of cargoEntityList within current one's FlightEntity stream has to be created,
     then all cargoEntities which are matching ids that were found before have to be filtered, from there on stream
-    has to be changed to list of Baggage objects and finally from each of these Baggage objects informations
+    has to be changed to list of Baggage objects and finally from each of these Baggage objects information's
     about baggage' pieces have to be retrieved
     */
     private int summarizePiecesOfBaggageDeparting(String iATACode, ZonedDateTime date) {
@@ -88,8 +88,8 @@ public class FlightEntityServiceImpl implements FlightEntityService {
 
     }
 
-    /* Code is almost the same as method above, however it has to be like this because filtering condition
-     is based on IATA code arriving not departing
+    /* Code is almost the same as method above, however it has to be like this because of filtering condition
+     is based on IATA code arriving not departing. It is possible to make it in one method but it might be harder to read.
      */
     private int summarizePiecesOfBaggageArriving(String iATACode, ZonedDateTime date) {
         log.info("summarizing pieces of baggage arriving");
