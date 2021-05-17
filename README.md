@@ -191,7 +191,7 @@ Exception package includes global exceptionHandler, that is responsible for catc
 ```
 src/main/java/com/aviation/task/airport/model/
 ```
-Model package is responsible to map JSON to POJO
+Model package stores classes that help map JSON to POJO
 
 #
 ```
@@ -208,7 +208,7 @@ The Service package is heart of business logic that produces expected by client 
 
 ## Tests
 
-Each class has its own corresponding test class that makes unit tests. Except classes that come from "model" package. 
+Each class has its own corresponding test class that makes unit tests. Except classes that come from "model", "exception" and "constant" package. 
 
 Tests that were made, are based on different JSON data files. These files are located in following directory:
 ```
