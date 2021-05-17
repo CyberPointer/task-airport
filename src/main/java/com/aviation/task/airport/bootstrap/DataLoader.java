@@ -7,27 +7,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import static com.aviation.task.airport.constants.Constants.FILE_CARGO_JSON;
+import static com.aviation.task.airport.constants.Constants.FILE_FLIGHT_JSON;
+
 
 @Component
 public class DataLoader implements CommandLineRunner {
-    private final String FILE_FLIGHT_JSON = "src/main/resources/json/flight.json";
-    private final String FILE_CARGO_JSON = "src/main/resources/json/cargo.json";
 
-    FlightEntityService flightEntityService;
-    CargoEntityService cargoEntityService;
+    private FlightEntityService flightEntityService;
+    private CargoEntityService cargoEntityService;
+    private DataInit dataInit;
 
-    private static  Logger log = LoggerFactory.getLogger(DataLoader.class);
+    private static Logger log = LoggerFactory.getLogger(DataLoader.class);
 
-    DataLoader(FlightEntityService flightEntityService, CargoEntityService cargoEntityService) {
+    public DataLoader(FlightEntityService flightEntityService, CargoEntityService cargoEntityService, DataInit dataInit) {
         this.flightEntityService = flightEntityService;
         this.cargoEntityService = cargoEntityService;
-        log.info("Constructing DataLoader");
+        this.dataInit = dataInit;
     }
 
-    public static String createJsonFlightEntityString(Integer flightId, Integer flightNumber, String departureAirportIATACode, String arrivalAirportIATACode,
-                                                      String departureDate) {
+    public static String createJsonFlightEntityString(Integer flightId, Integer flightNumber
+            , String departureAirportIATACode, String arrivalAirportIATACode, String departureDate) {
         log.info("Creating Json string");
-
         return "[{\"flightId\":\"" + flightId + "\","
                 + "\"flightNumber\":\"" + flightNumber
                 + "\",\"departureAirportIATACode\":\"" + departureAirportIATACode
@@ -37,10 +38,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("data loader's run");
-
-        DataInit dataInit = new DataInit(flightEntityService, cargoEntityService, FILE_FLIGHT_JSON, FILE_CARGO_JSON);
-        dataInit.loadData();
+        dataInit.loadData(FILE_FLIGHT_JSON, FILE_CARGO_JSON);
     }
 }
 

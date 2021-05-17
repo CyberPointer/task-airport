@@ -1,5 +1,7 @@
 package com.aviation.task.airport.bootstrap;
 
+
+import com.aviation.task.airport.constants.Constants;
 import com.aviation.task.airport.service.CargoEntityService;
 import com.aviation.task.airport.service.CargoEntityServiceImpl;
 import com.aviation.task.airport.service.FlightEntityService;
@@ -8,7 +10,7 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class DataInitTest {
@@ -29,8 +31,8 @@ class DataInitTest {
 
     @Test
     void loadData() {
-        dataInit = new DataInit(flightEntityService, cargoEntityService, FILE_FLIGHT_JSON, FILE_CARGO_JSON);
-        dataInit.loadData();
+        dataInit = new DataInit(flightEntityService, cargoEntityService);
+        dataInit.loadData(Constants.FILE_TEST_FLIGHT_JSON, Constants.FILE_TEST_CARGO_JSON);
 
         assertEquals(3, cargoEntityService.findAllCargo().size());
         assertEquals(3, flightEntityService.findAllFlights().size());

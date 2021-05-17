@@ -22,13 +22,11 @@ public class Baggage {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Baggage() {
     }
 
     /**
-     * 
      * @param pieces
      * @param weight
      * @param id

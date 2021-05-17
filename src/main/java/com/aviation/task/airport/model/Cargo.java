@@ -22,13 +22,11 @@ public class Cargo {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Cargo() {
     }
 
     /**
-     * 
      * @param pieces
      * @param weight
      * @param id

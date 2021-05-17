@@ -11,6 +11,7 @@ import java.util.List;
 
 @Service
 public class CargoEntityServiceImpl implements CargoEntityService {
+
     private final double LBS_TO_KG = 0.4535924;
     private List<CargoEntity> cargoEntities;
     private FlightInfo flightInfo;
@@ -44,7 +45,6 @@ public class CargoEntityServiceImpl implements CargoEntityService {
                                 })
                 )                                                                                                       //creating sub stream of cargos then calculating cargo weight in kg
                 .sum();                                                                                                 //summing all cargo weight
-
         return cargoWeight;
     }
 
@@ -63,7 +63,6 @@ public class CargoEntityServiceImpl implements CargoEntityService {
                                 })
                 )                                                                                                       //creating sub stream of cargos then calculating cargo weight in kg
                 .sum();                                                                                                 //summing all cargo weight
-
         return baggageWeight;
     }
 
@@ -71,6 +70,7 @@ public class CargoEntityServiceImpl implements CargoEntityService {
         log.info("calculating total weight");
 
         flightInfo = new FlightInfo();
+        flightInfo.setWeightUnit("kg");
         flightInfo.setBaggageWeight(calculateBaggageWeight(flightId));
         flightInfo.setCargoWeight(calculateCargoWeight(flightId));
         flightInfo.setTotalWeight(flightInfo.getBaggageWeight() + flightInfo.getCargoWeight());

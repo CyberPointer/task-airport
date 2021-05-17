@@ -1,6 +1,8 @@
 package com.aviation.task.airport.service;
 
 import com.aviation.task.airport.bootstrap.DataInit;
+import com.aviation.task.airport.constants.Constants;
+import com.aviation.task.airport.model.CargoEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,23 +22,22 @@ class CargoEntityServiceImplTest {
     @Autowired
     CargoEntityService cargoEntityService;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss XXX");
-
-    private final String FILE_FLIGHT_JSON = "src/test/resources/json/testflight.json";
-    private final String FILE_CARGO_JSON = "src/test/resources/json/testcargo.json";
+    DateTimeFormatter formatter;
 
     @BeforeEach
     void init() {
-        DataInit dataLoader = new DataInit(flightEntityService, cargoEntityService, FILE_FLIGHT_JSON, FILE_CARGO_JSON);
-        dataLoader.loadData();
+        DataInit dataLoader = new DataInit(flightEntityService, cargoEntityService);
+        dataLoader.loadData(Constants.FILE_TEST_FLIGHT_JSON, Constants.FILE_TEST_CARGO_JSON);
+        formatter = DateTimeFormatter.ofPattern(Constants.DATE_PATTERN);
     }
 
     @Test
     void save() {
-        assertEquals(3, cargoEntityService.findAllCargo().size());
+        List<CargoEntity> testCargoEntity = new LinkedList<>();
+        testCargoEntity.add(new CargoEntity());
+        testCargoEntity.add(new CargoEntity());
 
-        cargoEntityService.findAllCargo().remove(2);
-
+        cargoEntityService.save(testCargoEntity);
         assertEquals(2, cargoEntityService.findAllCargo().size());
     }
 

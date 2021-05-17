@@ -21,13 +21,11 @@ public class CargoEntity {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public CargoEntity() {
     }
 
     /**
-     * 
      * @param baggage
      * @param flightId
      * @param cargo

@@ -1,5 +1,5 @@
 # task-airport
-aiport api 
+Airport api
 
 * [General info](#general-info)
 * [Technologies](#technologies)
@@ -65,8 +65,21 @@ In order to get information about concrete flight's cargo, baggage and total wei
 ```
 /api/flight/zzz/date/yyyy-MM-dd'T'HH:mm:ss XXX
 ```
-Where "zzz" is Flight number that is accepted in between 1000 and 9000. And "yyyy-MM-dd'T'HH:mm:ss XXX"  wich is described above.
+Where "zzz" is Flight number that is accepted in between 1000 and 9000. And "yyyy-MM-dd'T'HH:mm:ss XXX"  which is described above.
 
+#
+When no flights or airport were found matching given date, api returns:
+```
+{
+    "httpStatus": "NOT_FOUND",
+    "msg": "Airport not found"
+}
+
+{
+    "httpStatus": "NOT_FOUND",
+    "msg": "Flight not found"
+}
+```
 ## Example 
 
 Example of running api :
@@ -91,14 +104,15 @@ http://localhost:8080/api/flight/6902/date/2017-12-16T12:37:42%20-01:00
 ```
 Api responds with information about concrete flight's weight in kg, in JSON format:
 ```
- {
-    "cargoWeight": "1917",
-    "baggageWeight": "811",
-    "totalWeight": "2728",
-  }
+{
+    "cargoWeight": 1917,
+    "baggageWeight": 811,
+    "totalWeight": 2728,
+    "weightUnit": "kg"
+}
 ```
 ## SpecialCase
-Because one of project assumption and uniqueness of Date. In order to check possibility of flights arriving/departing at same aiport that is specified in requested IATAcode. Modified JSONs were created with same Date but different airport's IATAcodes for arrival/departing.
+Because one of project assumption and uniqueness of Date. In order to check possibility of flights arriving/departing at same airport that is specified in requested IATAcode. Modified JSONs were created with same Date but different airport's IATAcodes for arrival/departing.
 ```
 {
     "flightId": 0,
@@ -119,12 +133,12 @@ Based on preceding JSONs, api produces depicted below respond for following url:
 ```
 /api/airport/GDN/date/2021-02-06T04:15:29 -01:00
  
- {
-    "flightsDeparting": "1",
-    "flightsArriving": "1",
-    "baggageArrivingPieces": "2866",
-    "baggageDepartingPieces": "4789"
-  }
+{
+    "flightsDeparting": 1,
+    "flightsArriving": 1,
+    "baggageArrivingPieces": 2866,
+    "baggageDepartingPieces": 4789
+}
 ```
 ## Data
 Random JSON data is located in following directory:
@@ -141,27 +155,37 @@ It contains:
 Project structure and business logic
 
 ```
-src/main/java/com/aviation/task/airport/bootstrap/
+src/main/java/com/aviation/task/airport/bootstrap/DataInit
+src/main/java/com/aviation/task/airport/bootstrap/DataLoader
 ```
-Bootsrap package contains two classes DataInit wich loads generated JSON data from json files and DataLoader wich is responsible to start and initlizie data with spring boot application execution.
+Bootstrap package contains two classes DataInit which loads generated JSON data from json files and DataLoader wich is responsible to start and initlizie data with spring boot application execution.
 
 #
 ```
-src/main/java/com/aviation/task/airport/controller/
+src/main/java/com/aviation/task/airport/constants/Constants
 ```
-Controller package inside hides a rest AiportController wich listens to URL endpoints described in Example category
+Constants package contains as name suggests constants class with constants fields that are being used across whole project.
 
 #
 ```
-src/main/java/com/aviation/task/airport/converter/
+src/main/java/com/aviation/task/airport/controller/AirportController
 ```
-Conventer package contains gson customized ZonedDateTime converter
+Controller package hides inside a REST AirportController which listens to URL endpoints described in Example category
 
 #
 ```
-src/main/java/com/aviation/task/airport/exception/
+src/main/java/com/aviation/task/airport/converter/ZonedDateTimeConverter
 ```
-Exception package includes as name suggest exceptionHandler, that for eg. catches validation exceptions.
+Converter package contains gson customized ZonedDateTime converter
+
+#
+```
+src/main/java/com/aviation/task/airport/exception/ApiException
+src/main/java/com/aviation/task/airport/exception/ApiExceptioHandler
+src/main/java/com/aviation/task/airport/exception/ApiRequestException
+src/main/java/com/aviation/task/airport/exception/NotFoundException
+```
+Exception package includes as name suggest global exceptionHandler, that for eg. catches validation exceptions.
 
 #
 ```
@@ -171,19 +195,22 @@ Model package is responsible to map JSON to POJO
 
 #
 ```
-src/main/java/com/aviation/task/airport/service/
+src/main/java/com/aviation/task/airport/service/CargoEntityService
+src/main/java/com/aviation/task/airport/service/CargoEntityServiceImpl
+src/main/java/com/aviation/task/airport/service/FlightEntityService
+src/main/java/com/aviation/task/airport/service/FlightEntityServiceImpl
 ```
 
 The Service package is heart of business logic that produces expected by client results.
-* It's divided by Interfaces and classes that implement them, each service is using java's  streampipelines & lambdas in order to deliver correct outcomes.
+* It's divided by Interfaces and classes that implement them, each service is using java's  stream pipe lines & lambdas in order to deliver correct outcomes.
 * FlightEntityServiceImpl calculates number of flights arriving/departing and pieces of baggage arriving/departing at concrete airport. Additionaly it finds flightId based on flightNumber and Date. 
 * CargoEntityServiceImpl produces information about concrete flight's cargo weight, baggage weight and total weight, it uses FlightEntityServiceImpl's help in order to find correct flight ID.
 
 ## Tests
 
-Each class has their own corresponding test class that makes unit and integration tests (some tests need application context to inject correct dependencies). Except classes that come from "model" package. 
+Each class has its own corresponding test class that makes unit tests. Except classes that come from "model" package. 
 
-Tests that were made, are based on different from main applciation JSON data files. These files are located in following directory:
+Tests that were made, are based on different JSON data files. These files are located in following directory:
 ```
 main/src/test/resources/json/testcargo.json
 main/src/test/resources/json/testflight.json

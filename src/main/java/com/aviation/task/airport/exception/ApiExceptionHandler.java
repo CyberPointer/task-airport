@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import javax.validation.ConstraintViolationException;
 import java.time.format.DateTimeParseException;
 
 
@@ -19,15 +18,21 @@ import java.time.format.DateTimeParseException;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ApiExceptionHandler {
 
-    public final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-
     private Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
-    @ExceptionHandler(value = {ApiRequestException.class, MethodArgumentTypeMismatchException.class, DateTimeParseException.class, IllegalArgumentException.class, ConversionFailedException.class})
-    public ResponseEntity<Object> handleArgumentTypeMismatchException(Exception e) {
-        log.info("exception handling");
-        String msg = "Incorrect argument/s";
-        ApiException apiException = new ApiException(msg, badRequest, ZonedDateTime.now(ZoneId.of("Z")));
-        return new ResponseEntity<>(apiException, badRequest);
+    @ExceptionHandler(value = {ApiRequestException.class, MethodArgumentTypeMismatchException.class,
+            DateTimeParseException.class, IllegalArgumentException.class, ConversionFailedException.class, ConstraintViolationException.class})
+    public ResponseEntity<Object> handleMultipleExceptions(Exception e) {
+        log.error("exception handling");
+        String msg = "Incorrect parameter/s";
+        ApiException apiException = new ApiException(msg, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {NotFoundException.class})
+    public ResponseEntity<Object> handleNotFound(NotFoundException e) {
+        log.error("value not found");
+        ApiException apiException = new ApiException(e.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
 }

@@ -1,5 +1,7 @@
 package com.aviation.task.airport.controller;
 
+import com.aviation.task.airport.exception.ApiExceptionHandler;
+import com.aviation.task.airport.exception.NotFoundException;
 import com.aviation.task.airport.model.AirportInfo;
 import com.aviation.task.airport.model.FlightInfo;
 import com.aviation.task.airport.service.CargoEntityService;
@@ -16,6 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.ZonedDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -30,16 +33,20 @@ class AirportControllerTest {
     @MockBean
     CargoEntityService cargoEntityService;
     @Autowired
+    ApiExceptionHandler apiExceptionHandler;
+    @Autowired
     MockMvc mockMvc;
 
     @BeforeEach
-    void init(){
+    void init() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(new AirportController(flightEntityService, cargoEntityService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new AirportController(flightEntityService, cargoEntityService))
+                .setControllerAdvice(apiExceptionHandler)
+                .build();
     }
 
     @Test
-    void getFlightInfo() throws Exception {
+    void getFlightInfoFound() throws Exception {
         FlightInfo flightInfo = new FlightInfo();
         flightInfo.setTotalWeight(1000L);
         flightInfo.setCargoWeight(500L);
@@ -50,7 +57,7 @@ class AirportControllerTest {
 
         when(cargoEntityService.calculateTotalWeight(anyInt())).thenReturn(flightInfo);
 
-        mockMvc.perform(get("/api/flight/"+flightNumber+"/date/"+date+"")
+        mockMvc.perform(get("/api/flight/" + flightNumber + "/date/" + date + "")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cargoWeight").value(500))
@@ -62,7 +69,49 @@ class AirportControllerTest {
     }
 
     @Test
-    void getAirportInfo() throws Exception {
+    void getFlightInfoNotFound() throws Exception {
+
+        Integer flightNumber = 5225;
+        String date = "2019-07-15T07:15:45 -02:00";
+
+        when(flightEntityService.findIdByFlightNumberAndDate(anyInt(), any(ZonedDateTime.class))).thenReturn(-1);
+
+        mockMvc.perform(get("/api/flight/" + flightNumber + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(jsonPath("$.msg").value("Flight not found"));
+
+        verify(cargoEntityService, times(0)).calculateTotalWeight(anyInt());
+        verifyNoMoreInteractions(cargoEntityService);
+    }
+
+    @Test
+    void getFlightInfoInvalidDateFormat() throws Exception {
+
+        Integer flightNumber = 5225;
+        String date = "2019-07-15T07:15:45-02:00";
+
+        mockMvc.perform(get("/api/flight/" + flightNumber + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("Incorrect parameter/s"));
+    }
+
+    @Test
+    void getFlightInfoInvalidFlightNumber() throws Exception {
+
+        Integer flightNumber = 800;
+        String date = "2019-07-15T07:15:45-02:00";
+
+        mockMvc.perform(get("/api/flight/" + flightNumber + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("Incorrect parameter/s"));
+    }
+
+    @Test
+    void getAirportInfoFound() throws Exception {
         AirportInfo airportInfo = new AirportInfo();
         airportInfo.setFlightsDeparting(2L);
         airportInfo.setFlightsArriving(1L);
@@ -72,9 +121,9 @@ class AirportControllerTest {
         String iATAcode = "LEW";
         String date = "2018-08-30T08:05:36 -02:00";
 
-        when(flightEntityService.flightsInfo(anyString(),any(ZonedDateTime.class))).thenReturn(airportInfo);
+        when(flightEntityService.flightsInfo(anyString(), any(ZonedDateTime.class))).thenReturn(airportInfo);
 
-        mockMvc.perform(get("/api/airport/"+iATAcode+"/date/"+date+"")
+        mockMvc.perform(get("/api/airport/" + iATAcode + "/date/" + date + "")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.flightsDeparting").value(2))
@@ -82,7 +131,61 @@ class AirportControllerTest {
                 .andExpect(jsonPath("$.baggageArrivingPieces").value(1000))
                 .andExpect(jsonPath("$.baggageDepartingPieces").value(0));
 
-        verify(flightEntityService, times(1)).flightsInfo(anyString(),any(ZonedDateTime.class));
+        verify(flightEntityService, times(1)).flightsInfo(anyString(), any(ZonedDateTime.class));
         verifyNoMoreInteractions(flightEntityService);
+    }
+
+    @Test
+    void getAirportInfoNotFound() throws Exception {
+        AirportInfo airportInfo = new AirportInfo();
+        airportInfo.setFlightsDeparting(0l);
+        airportInfo.setFlightsArriving(0l);
+
+        String iATAcode = "LEW";
+        String date = "2018-08-30T08:05:36 -02:00";
+
+        when(flightEntityService.flightsInfo(anyString(), any(ZonedDateTime.class))).thenReturn(airportInfo);
+
+        mockMvc.perform(get("/api/airport/" + iATAcode + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(jsonPath("$.msg").value("Airport not found"));
+
+        verify(flightEntityService, times(1)).flightsInfo(anyString(), any(ZonedDateTime.class));
+        verifyNoMoreInteractions(flightEntityService);
+    }
+
+    @Test
+    void getAirportInfoInvalidDateFormat() throws Exception {
+        String iATAcode = "LEW";
+        String date = "2018-08-30T08:05:36-02:00";
+
+        mockMvc.perform(get("/api/airport/" + iATAcode + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("Incorrect parameter/s"));
+    }
+
+    @Test
+    void getAirportInfoTypoIATACode() throws Exception {
+        String iATAcode = "LEZ";
+        String date = "2018-08-30T08:05:36-02:00";
+
+        mockMvc.perform(get("/api/airport/" + iATAcode + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("Incorrect parameter/s"));
+    }
+
+    @Test
+    void getAirportInfoInvalidIATAPattern() throws Exception {
+        String iATAcode = "WEYZ";
+        String date = "2018-08-30T08:05:36-02:00";
+
+        mockMvc.perform(get("/api/airport/" + iATAcode + "/date/" + date + "")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("Incorrect parameter/s"));
     }
 }

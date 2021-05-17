@@ -13,15 +13,19 @@ public class FlightInfo {
     @SerializedName("totalWeight")
     @Expose
     private Long totalWeight;
+    @SerializedName("weightUnit")
+    @Expose
+    private String weightUnit;
 
     public FlightInfo() {
 
     }
 
-    public FlightInfo(Long cargoWeight, Long baggageWeight, Long totalWeight) {
+    public FlightInfo(Long cargoWeight, Long baggageWeight, Long totalWeight, String weightUnit) {
         this.cargoWeight = cargoWeight;
         this.baggageWeight = baggageWeight;
         this.totalWeight = totalWeight;
+        this.weightUnit = weightUnit;
     }
 
     public Long getCargoWeight() {
@@ -48,12 +52,21 @@ public class FlightInfo {
         this.totalWeight = totalWeight;
     }
 
+    public String getWeightUnit() {
+        return weightUnit;
+    }
+
+    public void setWeightUnit(String weightUnit) {
+        this.weightUnit = weightUnit;
+    }
+
     @Override
     public String toString() {
         return "FlightInfo{" +
                 "cargoWeight=" + cargoWeight +
                 ", baggageWeight=" + baggageWeight +
                 ", totalWeight=" + totalWeight +
+                ", weightUnit='" + weightUnit + '\'' +
                 '}';
     }
 }
